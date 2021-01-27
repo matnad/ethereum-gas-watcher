@@ -1,0 +1,27 @@
+{
+  "manifest_version": 2,
+  "name": "Ethereum Gas Watcher",
+  "version": "1.0",
+  "author": "Matthias Nadler",
+  "description": "Monitor Ethereum Gas Prices and set notifications",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "64": "icons/icon64.png",
+    "134": "icons/icon134.png"
+  },
+  "permissions": ["storage", "alarms", "notifications"],
+  "browser_action": {
+    "default_icon": "icons/icon32.png",
+    "default_title": "Ethereum Gas Watcher",
+    "default_popup": "src/popup.html"
+  },
+  "background" : {
+    "scripts": ["src/background.js"]
+  },
+  "applications": {
+    "gecko": {
+      "id": "ethereum_gas_watcher@matnad.eth"
+    }
+  }
+}

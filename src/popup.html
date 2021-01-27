@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Ethereum Gas Prices</title>
+    <link rel="stylesheet" href="./style.css"/>
+    <script type="text/javascript" src="./popup.js"></script>
+</head>
+<body>
+<div id="display-gas-prices">
+    <ul>
+        <li id="rapid">
+            <div class="left">
+                <p>Rapid</p>
+                <strong id="price-rapid">..</strong>
+            </div>
+            <div class="right">
+                <span><strong>15 Seconds</strong></span>
+            </div>
+        </li>
+        <li id="fast">
+            <div class="left">
+                <p>Fast</p>
+                <strong id="price-fast">..</strong>
+            </div>
+            <div class="right">
+                <span><strong>1 Minute</strong></span>
+            </div>
+        </li>
+        <li id="standard">
+            <div class="left">
+                <p>Standard</p>
+                <strong id="price-standard">..</strong>
+            </div>
+            <div class="right">
+                <span><strong>3 Minutes</strong></span>
+            </div>
+        </li>
+        <li id="slow">
+            <div class="left">
+                <p>Slow</p>
+                <strong id="price-slow">..</strong>
+            </div>
+            <div class="right">
+                <span><strong>10+ Minutes</strong></span>
+            </div>
+
+        </li>
+    </ul>
+    <div class="update">Last update: <span id="last-update">1 Minute</span> ago</div>
+</div>
+<div id="set-alert" class="div-hidden">
+    <div class="alert">
+        <p>Set an alert when <strong id="alert-type">rapid</strong> gas costs drop below:</p>
+        <form id="alert-form">
+            <input id="alert-value" type="text"/>
+            <button>Set</button>
+        </form>
+    </div>
+</div>
+<div id="show-alert" class="div-hidden">
+    <div class="alert">
+        <div class="row">
+            <img id="alert-cancel" src="../icons/cancel.png" alt="cancel alert"/>
+            <p id="alert-text"></p>
+        </div>
+    </div>
+</div>
+</body>
+</html>
