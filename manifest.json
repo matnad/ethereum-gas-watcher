@@ -1,5 +1,5 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "Ethereum Gas Watcher",
   "version": "1.0",
   "author": "Matthias Nadler",
@@ -11,17 +11,12 @@
     "134": "icons/icon134.png"
   },
   "permissions": ["storage", "alarms", "notifications"],
-  "browser_action": {
+  "action": {
     "default_icon": "icons/icon32.png",
     "default_title": "Ethereum Gas Watcher",
     "default_popup": "src/popup.html"
   },
-  "background" : {
-    "scripts": ["src/background.js"]
-  },
-  "applications": {
-    "gecko": {
-      "id": "ethereum_gas_watcher@matnad.eth"
-    }
+  "background": {
+    "service_worker": "background.js"
   }
 }

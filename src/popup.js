@@ -1,10 +1,10 @@
 // Add a listener that reacts to storage changes in gas and alert data
-browser.storage.onChanged.addListener(updateListener)
+chrome.storage.onChanged.addListener(updateListener)
 
 // Gracefully remove the listener when the popup is closed
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "hidden") {
-    browser.storage.onChanged.removeListener(updateListener)
+    chrome.storage.onChanged.removeListener(updateListener)
   }
 })
 
@@ -30,7 +30,7 @@ function updateDisplay(gasData) {
 // Show or hide information about an active alert
 // Triggered when the popup is opened or when storage is changed
 function updateAlert(alert) {
-  if (Number.isInteger(alert.value) && alert.value > 0) {
+  if (Number.isInteger(alert?.value) && alert?.value > 0) {
     document.getElementById("show-alert").classList.remove("div-hidden")
     document.getElementById("alert-text").innerHTML =
       `Notification set for <strong>${alert.level}</strong> at ${alert.value} gwei.`
@@ -39,16 +39,12 @@ function updateAlert(alert) {
   }
 }
 
-// Updating the "last updated" notification every 5 seconds
-const periodInMinutes = 5/60
-browser.alarms.create("update_timestamp", {periodInMinutes})
-browser.alarms.onAlarm.addListener((alarm) => {
-  if (alarm.name === "update_timestamp") {
-    browser.storage.sync.get("gasData").then((r) => {
-      updateTime(r?.gasData?.timestamp)
-    })
-  }
-})
+// Updating the "last updated" notification every 2 seconds
+setInterval(() => {
+  chrome.storage.sync.get("gasData", r => {
+    updateTime(r?.gasData?.timestamp)
+  })
+}, 2000)
 
 function updateTime(timestamp) {
   const secondsPassed = Math.max(0, Math.floor((Date.now() - timestamp) / 1000))
@@ -61,7 +57,7 @@ function updateTime(timestamp) {
 
   // As long as popup is open, attempt to refresh every 20 seconds
   if (secondsPassed > 20) {
-    browser.runtime.getBackgroundPage(page => {page.fetchGasData()})
+    chrome.runtime.sendMessage({"action": "fetch_gasData"})
   }
 }
 
@@ -72,7 +68,7 @@ function setDefaultLevel(level) {
   for (let i = 0; i < list.length; i++) {
     list[i].className = level === i ? "selected" : ""
   }
-  browser.storage.sync.set({"level": LEVELS[level]})
+  chrome.storage.sync.set({"level": LEVELS[level]})
   document.getElementById("alert-type").innerText = LEVELS[level]
 }
 
@@ -81,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const defaultLevel = Array.from(li.parentNode.children).indexOf(li)
     li.addEventListener('click', () => setDefaultLevel(defaultLevel))
   }
-  browser.storage.sync.get({"level": "standard"}).then(r => {
+  chrome.storage.sync.get({"level": "standard"}, r => {
     document.getElementById(`${r?.level}`).className = "selected"
   })
 
@@ -92,7 +88,7 @@ document.addEventListener('contextmenu', event => {
   const price_box = event.target.closest('li')
   if (price_box) {
     event.preventDefault()
-    browser.storage.sync.get({"level": "standard"}).then(r => {
+    chrome.storage.sync.get({"level": "standard"}, r => {
       const current_box = document.getElementById(`${r?.level}`)
       setDefaultLevel(Array.from(price_box.parentNode.children).indexOf(price_box))
       if (current_box === price_box) {
@@ -108,7 +104,7 @@ document.addEventListener('contextmenu', event => {
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("alert-form").addEventListener('submit', (event) => {
     event.preventDefault()
-    browser.storage.sync.get({"level": "standard"}).then(r => {
+    chrome.storage.sync.get({"level": "standard"}, r => {
       let input_field = document.getElementById("alert-value")
       let value
       value = parseInt(input_field.value)
@@ -120,7 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "level": r?.level,
         value
       }
-      browser.storage.local.set({alert})
+      chrome.storage.local.set({alert})
       document.getElementById("set-alert").classList.add("div-hidden")
     })
   })
@@ -129,7 +125,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // Cancel Alert
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("alert-cancel").addEventListener('click', (event) => {
-    browser.storage.local.set({"alert": {"level": "standard", "value": 0}})
+    chrome.storage.local.set({"alert": {"level": "standard", "value": 0}})
   })
 })
 
@@ -137,14 +133,14 @@ document.addEventListener("DOMContentLoaded", () => {
 // ------- On page load -------
 
 // Show gas Data, then update if older than 10 seconds
-browser.storage.sync.get("gasData").then((r) => {
+chrome.storage.sync.get("gasData", r => {
   updateDisplay(r?.gasData)
   if (Date.now() - r?.gasData?.timestamp >= 10000) {
-    browser.runtime.getBackgroundPage(page => {page.fetchGasData()})
+    chrome.runtime.sendMessage({"action": "fetch_gasData"})
   }
 })
 
 // Show alert (gas price target), if set
-browser.storage.local.get("alert").then((r) => {
+chrome.storage.local.get("alert", r => {
   updateAlert(r?.alert)
 })
